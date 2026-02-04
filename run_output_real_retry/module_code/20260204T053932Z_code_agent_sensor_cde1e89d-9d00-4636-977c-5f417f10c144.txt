@@ -1,0 +1,178 @@
+The `code_agent` generates the necessary C header and source files for the `sensor` module, implementing a Moving Average Filter (MAF) to provide a stable, filtered sensor value using deterministic methods and avoiding dynamic memory allocation.
+
+---
+
+## `sensor.h`
+
+```c
+#ifndef SENSOR_H
+#define SENSOR_H
+
+#include <stdint.h>
+#include <stdbool.h>
+
+/**
+ * @file sensor.h
+ * @brief Interface definition for the sensor reading and filtering module.
+ *
+ * Implements a fixed-window Moving Average Filter (MAF).
+ */
+
+// Configuration for the Moving Average Filter
+// Must be a power of 2 for potential optimization, but standard implementation
+// supports any non-zero integer.
+#define SENSOR_FILTER_WINDOW_SIZE 8
+
+/**
+ * @brief Initializes the sensor module and the associated filter state.
+ * Must be called once before use.
+ */
+void sensor_init(void);
+
+/**
+ * @brief Reads the raw sensor value (simulated or actual hardware read).
+ * @return The instantaneous raw sensor reading.
+ */
+uint16_t sensor_read_raw(void);
+
+/**
+ * @brief Updates the sensor state: reads a new raw value and updates the filter.
+ * This function should be called periodically at the required sampling rate.
+ */
+void sensor_update(void);
+
+/**
+ * @brief Retrieves the current filtered sensor value.
+ * @return The filtered (averaged) sensor reading.
+ */
+uint16_t sensor_get_filtered_value(void);
+
+#endif // SENSOR_H
+```
+
+---
+
+## `sensor.c`
+
+```c
+#include "sensor.h"
+#include <stddef.h> // For size_t
+
+/*
+ * Requirement ID: sensor
+ * Agent ID: code_agent
+ * Prompt Version: v1
+ */
+
+// Constraint Check: Ensure filter size is valid for calculation
+#if SENSOR_FILTER_WINDOW_SIZE == 0
+#error "SENSOR_FILTER_WINDOW_SIZE must be greater than 0"
+#endif
+
+// --- Internal State (Fixed, static memory only) ---
+
+/**
+ * @brief Circular buffer (Window) holding the last N sensor samples.
+ */
+static uint16_t sensor_buffer[SENSOR_FILTER_WINDOW_SIZE];
+
+/**
+ * @brief Index pointing to the oldest element in the buffer (the one to be overwritten next).
+ */
+static uint8_t sensor_buffer_index = 0;
+
+/**
+ * @brief Running sum of all elements currently in the buffer.
+ * Use uint32_t to prevent overflow: 65535 (max 16-bit reading) * 8 (max size assumed)
+ * requires at least 19 bits, so uint32_t is safe and deterministic.
+ */
+static uint32_t sensor_current_sum = 0;
+
+/**
+ * @brief The latest calculated filtered value (Moving Average).
+ */
+static uint16_t sensor_filtered_value = 0;
+
+// --- Simulation Hook (Replace this block with actual hardware interaction) ---
+
+#define SENSOR_MAX_VALUE 4095 // Example 12-bit sensor range
+
+/**
+ * @brief Simulates reading a raw sensor value.
+ * In production code, this function must be implemented to communicate
+ * with the physical sensor hardware (e.g., ADC read).
+ */
+uint16_t sensor_read_raw(void)
+{
+    // Simulation variable: generates a simple, noisy ramp for testing filter behavior
+    static uint16_t simulated_raw_counter = 0;
+    
+    simulated_raw_counter++;
+    if (simulated_raw_counter > SENSOR_MAX_VALUE)
+    {
+        simulated_raw_counter = 0;
+    }
+    
+    // Add deterministic noise (e.g., last few bits of the counter)
+    uint16_t noise = (simulated_raw_counter >> 2) & 0x07;
+    
+    return (simulated_raw_counter + noise) & SENSOR_MAX_VALUE;
+}
+
+// --- Public Interface Implementation ---
+
+/**
+ * @brief Initializes the sensor module and the associated filter state.
+ */
+void sensor_init(void)
+{
+    sensor_current_sum = 0;
+    sensor_buffer_index = 0;
+    sensor_filtered_value = 0;
+
+    // Initialize the buffer to zero to ensure a clean start
+    for (size_t i = 0; i < SENSOR_FILTER_WINDOW_SIZE; i++)
+    {
+        sensor_buffer[i] = 0;
+    }
+}
+
+/**
+ * @brief Updates the sensor state and applies the Moving Average Filter (MAF).
+ * Implements a rolling sum update for O(1) complexity per update.
+ */
+void sensor_update(void)
+{
+    // 1. Read the new raw value
+    uint16_t new_raw_value = sensor_read_raw();
+
+    // 2. Remove the oldest value from the running sum
+    uint16_t oldest_value = sensor_buffer[sensor_buffer_index];
+    sensor_current_sum -= (uint32_t)oldest_value;
+
+    // 3. Store the new value in the buffer, replacing the oldest sample
+    sensor_buffer[sensor_buffer_index] = new_raw_value;
+
+    // 4. Add the new value to the running sum
+    sensor_current_sum += (uint32_t)new_raw_value;
+
+    // 5. Update the buffer index (circular wrap-around)
+    sensor_buffer_index++;
+    if (sensor_buffer_index >= SENSOR_FILTER_WINDOW_SIZE)
+    {
+        sensor_buffer_index = 0;
+    }
+
+    // 6. Calculate the new average (Filtered Value)
+    // Integer division is deterministic and used here, truncating the result.
+    sensor_filtered_value = (uint16_t)(sensor_current_sum / SENSOR_FILTER_WINDOW_SIZE);
+}
+
+/**
+ * @brief Retrieves the current filtered sensor value.
+ */
+uint16_t sensor_get_filtered_value(void)
+{
+    return sensor_filtered_value;
+}
+```

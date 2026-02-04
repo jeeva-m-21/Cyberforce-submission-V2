@@ -1,0 +1,41 @@
+{
+  "system_id": "industrial-temp-monitor",
+  "modules": [
+    {
+      "id": "temp_sensor",
+      "responsibility": "read temperature from industrial sensor, filter noise, and provide calibrated value",
+      "constraints": {
+        "filter_type": "moving_average",
+        "calibration": "factory"
+      }
+    },
+    {
+      "id": "logger",
+      "responsibility": "log temperature readings to local flash storage with timestamp",
+      "constraints": {
+        "storage": "flash",
+        "format": "csv"
+      }
+    },
+    {
+      "id": "comm",
+      "responsibility": "send temperature and status over RS485 Modbus",
+      "constraints": {
+        "protocol": "modbus",
+        "baudrate": 19200
+      }
+    },
+    {
+      "id": "ota",
+      "responsibility": "handle secure OTA firmware updates",
+      "constraints": {
+        "encryption": true,
+        "rollback": true
+      }
+    }
+  ],
+  "constraints": {
+    "safety_level": "SIL2",
+    "standards": ["MISRA C:2012", "CERT C", "IEC 61508"]
+  }
+}

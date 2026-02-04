@@ -1,0 +1,12 @@
+{
+  "artifact_id": "a345aedc-804c-48e0-9fa5-1c89922c3d9b",
+  "agent_id": "quality_agent",
+  "artifact_type": "reports",
+  "module_id": null,
+  "prompt_version": "v1",
+  "requirement_id": null,
+  "timestamp": "2026-02-04T04:52:57.954412Z",
+  "extra": {
+    "prompt_version": "v1"
+  }
+}

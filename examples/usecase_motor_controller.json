@@ -1,0 +1,10 @@
+{
+  "system_id": "motor-controller-01",
+  "modules": [
+    {"id": "motor_control", "responsibility": "closed-loop motor speed control using PID with PWM output"},
+    {"id": "encoder", "responsibility": "read quadrature encoder and compute RPM"},
+    {"id": "safety", "responsibility": "overcurrent/overtemp monitoring and safe shutdown"},
+    {"id": "comm", "responsibility": "CAN telemetry and command handling"},
+    {"id": "diagnostics", "responsibility": "fault logging and status reporting"}
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Artifact Type Schema",
+  "description": "Defines allowed artifact types, formats, and output strategies for CyberForge-26",
+  "type": "object",
+  "properties": {
+    "artifact_types": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Human-readable description"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["text", "binary", "json", "multi-file", "archive"],
+            "description": "Output format type"
+          },
+          "extension": {
+            "type": "string",
+            "description": "Default file extension (e.g., '.c', '.h', '.json')"
+          },
+          "separable": {
+            "type": "boolean",
+            "description": "Can this artifact be split into multiple files? (header/source separation)"
+          },
+          "sub_types": {
+            "type": "array",
+            "description": "If multi-file, list allowed sub-types",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "extension": {"type": "string"},
+                "description": {"type": "string"}
+              },
+              "required": ["name", "extension"]
+            }
+          },
+          "compile": {
+            "type": "boolean",
+            "description": "Should build agent attempt to compile this?"
+          },
+          "agent": {
+            "type": "string",
+            "description": "Primary agent that generates this artifact type"
+          },
+          "required_metadata": {
+            "type": "array",
+            "description": "Required metadata fields",
+            "items": {"type": "string"}
+          },
+          "optional_metadata": {
+            "type": "array",
+            "description": "Optional metadata fields",
+            "items": {"type": "string"}
+          }
+        },
+        "required": ["description", "format", "agent"]
+      }
+    }
+  },
+  "example": {
+    "artifact_types": {
+      "module_code": {
+        "description": "C/C++ module source code (header + implementation)",
+        "format": "multi-file",
+        "separable": true,
+        "compile": false,
+        "agent": "code_agent",
+        "sub_types": [
+          {
+            "name": "header",
+            "extension": ".h",
+            "description": "Header file with declarations"
+          },
+          {
+            "name": "source",
+            "extension": ".c",
+            "description": "Implementation file"
+          }
+        ],
+        "required_metadata": ["module_id", "prompt_version"],
+        "optional_metadata": ["standards", "dependencies"]
+      },
+      "unit_tests": {
+        "description": "Unit test source code",
+        "format": "text",
+        "extension": ".c",
+        "separable": false,
+        "compile": false,
+        "agent": "test_agent",
+        "required_metadata": ["module_id"],
+        "optional_metadata": ["test_framework"]
+      },
+      "quality_report": {
+        "description": "Code quality and safety analysis",
+        "format": "json",
+        "extension": ".json",
+        "separable": false,
+        "compile": false,
+        "agent": "quality_agent",
+        "required_metadata": ["module_id"],
+        "optional_metadata": ["standards", "violations"]
+      }
+    }
+  }
+}

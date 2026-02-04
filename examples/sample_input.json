@@ -1,0 +1,7 @@
+{
+  "system_id": "example-system-1",
+  "modules": [
+    {"id": "sensor", "responsibility": "read sensor and provide filtered value"},
+    {"id": "comm", "responsibility": "send telemetry over UART"}
+  ]
+}

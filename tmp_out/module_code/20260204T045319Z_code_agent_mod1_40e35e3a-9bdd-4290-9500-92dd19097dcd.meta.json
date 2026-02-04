@@ -1,0 +1,12 @@
+{
+  "artifact_id": "40e35e3a-9bdd-4290-9500-92dd19097dcd",
+  "agent_id": "code_agent:mod1",
+  "artifact_type": "module_code",
+  "module_id": "mod1",
+  "prompt_version": "v1",
+  "requirement_id": null,
+  "timestamp": "2026-02-04T04:53:19.782917Z",
+  "extra": {
+    "prompt_version": "v1"
+  }
+}

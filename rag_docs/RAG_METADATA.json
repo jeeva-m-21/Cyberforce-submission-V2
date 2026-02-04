@@ -1,0 +1,627 @@
+{
+  "rag_metadata": {
+    "version": "1.0",
+    "created": "2026-02-04",
+    "total_documents": 11,
+    "documents": [
+      {
+        "id": "embedded_safety",
+        "filename": "embedded_safety.md",
+        "title": "Embedded C Safety Guidelines",
+        "priority": "CRITICAL",
+        "domain": "safety",
+        "standards": ["MISRA-C-2012", "CERT-C", "IEC-62304"],
+        "keywords": [
+          "safety",
+          "memory-safety",
+          "buffer-overflow",
+          "error-handling",
+          "type-casting",
+          "goto",
+          "integer-overflow",
+          "bounds-checking",
+          "volatile",
+          "MISRA",
+          "CERT"
+        ],
+        "code_patterns": [
+          "error-codes",
+          "null-checks",
+          "buffer-safety",
+          "integer-validation",
+          "macro-safety"
+        ],
+        "module_types": ["all"],
+        "search_weight": 1.0,
+        "related_documents": ["memory_management", "testing_strategies"],
+        "sections": [
+          "MISRA C:2012 Key Rules",
+          "CERT C Guidelines",
+          "Practical Patterns"
+        ]
+      },
+      {
+        "id": "modbus_RS485",
+        "filename": "modbus_RS485.md",
+        "title": "Modbus RS485 Protocol Implementation",
+        "priority": "HIGH",
+        "domain": "communication",
+        "standards": ["IEC-60870-5-101"],
+        "keywords": [
+          "modbus",
+          "RS485",
+          "protocol",
+          "CRC-16",
+          "RTU",
+          "register",
+          "slave-id",
+          "function-code",
+          "baud-rate",
+          "timing",
+          "communication"
+        ],
+        "code_patterns": [
+          "CRC-verification",
+          "frame-structure",
+          "register-mapping",
+          "timeout-handling",
+          "error-recovery"
+        ],
+        "module_types": ["comm"],
+        "search_weight": 0.95,
+        "related_documents": ["communication_protocols", "hardware_interfaces"],
+        "sections": [
+          "Protocol Overview",
+          "Safe Implementation Pattern",
+          "Common Pitfalls",
+          "OTA Considerations"
+        ]
+      },
+      {
+        "id": "ota_firmware_updates",
+        "filename": "ota_firmware_updates.md",
+        "title": "Secure OTA Firmware Update Patterns",
+        "priority": "CRITICAL",
+        "domain": "ota",
+        "standards": ["IEC-62304", "AUTOSAR"],
+        "keywords": [
+          "OTA",
+          "firmware-update",
+          "versioning",
+          "integrity",
+          "encryption",
+          "signature",
+          "rollback",
+          "dual-partition",
+          "bootloader",
+          "SHA-256",
+          "RSA-2048",
+          "ECDSA",
+          "atomic-operation"
+        ],
+        "code_patterns": [
+          "firmware-header",
+          "version-comparison",
+          "hash-verification",
+          "signature-validation",
+          "partition-swap",
+          "rollback-protection"
+        ],
+        "module_types": ["ota"],
+        "search_weight": 1.0,
+        "related_documents": ["embedded_safety", "memory_management"],
+        "sections": [
+          "OTA Architecture Overview",
+          "Safe Firmware Versioning",
+          "Integrity Checking",
+          "Encryption & Authentication",
+          "Flash Layout",
+          "Testing OTA"
+        ]
+      },
+      {
+        "id": "interrupt_handling",
+        "filename": "interrupt_handling.md",
+        "title": "Interrupt Handling & Real-Time Execution",
+        "priority": "CRITICAL",
+        "domain": "rtos",
+        "standards": ["AUTOSAR", "Real-Time-Systems"],
+        "keywords": [
+          "ISR",
+          "interrupt",
+          "real-time",
+          "context-switching",
+          "WCET",
+          "volatile",
+          "atomic",
+          "race-condition",
+          "priority",
+          "watchdog",
+          "FreeRTOS",
+          "stack-overflow"
+        ],
+        "code_patterns": [
+          "ISR-pattern",
+          "flag-signaling",
+          "critical-section",
+          "semaphore",
+          "priority-configuration",
+          "WCET-profiling"
+        ],
+        "module_types": ["all"],
+        "search_weight": 0.95,
+        "related_documents": ["memory_management", "testing_strategies"],
+        "sections": [
+          "ISR Design Principles",
+          "Shared Data & Race Conditions",
+          "Timer Interrupts",
+          "Watchdog Timer Integration",
+          "Interrupt Conflicts",
+          "Debugging Interrupt Issues"
+        ]
+      },
+      {
+        "id": "memory_management",
+        "filename": "memory_management.md",
+        "title": "Memory Management & Heap Safety",
+        "priority": "CRITICAL",
+        "domain": "memory",
+        "standards": ["MISRA-C-2012", "CERT-C"],
+        "keywords": [
+          "memory",
+          "malloc",
+          "free",
+          "stack",
+          "heap",
+          "fragmentation",
+          "static-allocation",
+          "pool-allocation",
+          "stack-overflow",
+          "canary",
+          "BSS",
+          "RAM-layout"
+        ],
+        "code_patterns": [
+          "static-array",
+          "stack-check",
+          "pool-alloc",
+          "memory-init",
+          "canary-pattern",
+          "linker-script"
+        ],
+        "module_types": ["all"],
+        "search_weight": 1.0,
+        "related_documents": ["embedded_safety", "testing_strategies"],
+        "sections": [
+          "Embedded Systems Memory Model",
+          "Static Allocation",
+          "Stack vs Heap",
+          "Pool Allocation",
+          "Stack Size Calculation",
+          "Linker Script Memory Declaration"
+        ]
+      },
+      {
+        "id": "hardware_interfaces",
+        "filename": "hardware_interfaces.md",
+        "title": "Hardware Interfaces & Peripheral Configuration",
+        "priority": "HIGH",
+        "domain": "hardware",
+        "keywords": [
+          "GPIO",
+          "UART",
+          "ADC",
+          "PWM",
+          "timer",
+          "I2C",
+          "SPI",
+          "watchdog",
+          "peripheral",
+          "pin-config",
+          "interrupt-config",
+          "DMA"
+        ],
+        "code_patterns": [
+          "GPIO-control",
+          "UART-frame",
+          "ADC-conversion",
+          "PWM-duty",
+          "timer-setup",
+          "I2C-transaction",
+          "SPI-transfer",
+          "watchdog-feed"
+        ],
+        "module_types": ["temp_sensor", "comm", "logger"],
+        "search_weight": 0.9,
+        "related_documents": ["sensor_integration", "communication_protocols"],
+        "sections": [
+          "GPIO",
+          "UART/Serial Communication",
+          "ADC",
+          "PWM",
+          "Timers & Counters",
+          "Watchdog Timer",
+          "I2C Communication",
+          "SPI Communication"
+        ]
+      },
+      {
+        "id": "state_machines",
+        "filename": "state_machines.md",
+        "title": "State Machines & Control Flow",
+        "priority": "HIGH",
+        "domain": "control-flow",
+        "standards": ["UML-StateChart"],
+        "keywords": [
+          "FSM",
+          "state-machine",
+          "state-transition",
+          "event-queue",
+          "guard-condition",
+          "hierarchical-fsm",
+          "deadlock",
+          "entry-action",
+          "exit-action",
+          "timeout"
+        ],
+        "code_patterns": [
+          "state-enum",
+          "event-enum",
+          "state-handler",
+          "dispatch-table",
+          "event-queue",
+          "guard-function",
+          "timeout-check",
+          "state-trace"
+        ],
+        "module_types": ["all"],
+        "search_weight": 0.85,
+        "related_documents": ["testing_strategies", "interrupt_handling"],
+        "sections": [
+          "Finite State Machine Design",
+          "Event Queue Pattern",
+          "State Entry/Exit Actions",
+          "Hierarchical State Machines",
+          "Guard Conditions",
+          "Deadlock Prevention",
+          "Debugging State Machines"
+        ]
+      },
+      {
+        "id": "testing_strategies",
+        "filename": "testing_strategies.md",
+        "title": "Testing Strategies for Embedded Firmware",
+        "priority": "HIGH",
+        "domain": "testing",
+        "standards": ["IEC-61508", "DO-178B"],
+        "keywords": [
+          "unit-test",
+          "integration-test",
+          "HIL",
+          "mock",
+          "stub",
+          "FSM-test",
+          "coverage",
+          "mutation-test",
+          "timing-test",
+          "CRC-test",
+          "assert"
+        ],
+        "code_patterns": [
+          "assert-macro",
+          "test-case",
+          "mock-pattern",
+          "test-runner",
+          "coverage-tracking",
+          "timing-measurement"
+        ],
+        "module_types": ["all"],
+        "search_weight": 0.9,
+        "related_documents": ["state_machines", "memory_management"],
+        "sections": [
+          "Unit Testing Framework",
+          "Integration Testing",
+          "Hardware-in-the-Loop Testing",
+          "State Machine Testing",
+          "Memory Safety Testing",
+          "Timing & Performance Tests",
+          "CRC & Checksum Testing"
+        ]
+      },
+      {
+        "id": "communication_protocols",
+        "filename": "communication_protocols.md",
+        "title": "Communication Protocols & Patterns",
+        "priority": "HIGH",
+        "domain": "communication",
+        "standards": ["ISO-11898", "I2C-Spec", "SPI-Spec"],
+        "keywords": [
+          "UART",
+          "CAN",
+          "I2C",
+          "SPI",
+          "modbus",
+          "frame",
+          "checksum",
+          "CRC",
+          "master-slave",
+          "protocol",
+          "packet",
+          "encoding"
+        ],
+        "code_patterns": [
+          "frame-structure",
+          "CRC-calculation",
+          "frame-parsing",
+          "checksum-verify",
+          "packet-encode",
+          "packet-decode"
+        ],
+        "module_types": ["comm"],
+        "search_weight": 0.95,
+        "related_documents": ["hardware_interfaces", "modbus_RS485"],
+        "sections": [
+          "UART/Serial Communication",
+          "CAN Bus Communication",
+          "I2C Master/Slave Communication",
+          "Modbus RTU Master",
+          "SPI Protocol",
+          "Packet Framing Pattern"
+        ]
+      },
+      {
+        "id": "sensor_integration",
+        "filename": "sensor_integration.md",
+        "title": "Sensor Integration & Data Processing",
+        "priority": "HIGH",
+        "domain": "sensors",
+        "keywords": [
+          "sensor",
+          "ADC",
+          "I2C",
+          "SPI",
+          "filtering",
+          "moving-average",
+          "Kalman-filter",
+          "EMA",
+          "calibration",
+          "outlier",
+          "health-monitoring",
+          "data-fusion"
+        ],
+        "code_patterns": [
+          "sensor-init",
+          "sensor-read",
+          "filter-pattern",
+          "calibration-apply",
+          "health-check",
+          "fusion-pattern"
+        ],
+        "module_types": ["temp_sensor", "logger"],
+        "search_weight": 0.9,
+        "related_documents": ["hardware_interfaces", "signal_processing"],
+        "sections": [
+          "Sensor Types & Initialization",
+          "Data Filtering & Averaging",
+          "Multi-Sensor Fusion",
+          "Calibration & Error Correction",
+          "Data Quality Checks"
+        ]
+      },
+      {
+        "id": "power_management",
+        "filename": "power_management.md",
+        "title": "Power Management & Low-Power Design",
+        "priority": "MEDIUM",
+        "domain": "power",
+        "keywords": [
+          "power-management",
+          "sleep-mode",
+          "deep-sleep",
+          "standby",
+          "DVFS",
+          "frequency-scaling",
+          "voltage-scaling",
+          "battery",
+          "monitoring",
+          "watchdog",
+          "idle",
+          "RTC"
+        ],
+        "code_patterns": [
+          "sleep-enter",
+          "clock-scaling",
+          "peripheral-gating",
+          "battery-monitor",
+          "idle-check",
+          "power-profile"
+        ],
+        "module_types": ["all"],
+        "search_weight": 0.75,
+        "related_documents": ["interrupt_handling", "hardware_interfaces"],
+        "sections": [
+          "Power States & Modes",
+          "Clock Management",
+          "Peripheral Power Gating",
+          "Battery Monitoring",
+          "Idle Time Processing",
+          "Watchdog & Reliability",
+          "Power Consumption Profiling"
+        ]
+      },
+      {
+        "id": "signal_processing",
+        "filename": "sensor_integration.md",
+        "title": "Signal Processing & Data Analysis",
+        "priority": "MEDIUM",
+        "domain": "dsp",
+        "keywords": [
+          "filter",
+          "FFT",
+          "smoothing",
+          "averaging",
+          "normalization",
+          "sampling",
+          "nyquist",
+          "aliasing"
+        ],
+        "code_patterns": [
+          "moving-average",
+          "exponential-average",
+          "median-filter",
+          "outlier-removal"
+        ],
+        "module_types": ["logger", "temp_sensor"],
+        "search_weight": 0.7,
+        "related_documents": ["sensor_integration"]
+      }
+    ],
+    "domain_mapping": {
+      "safety": ["embedded_safety", "testing_strategies", "ota_firmware_updates"],
+      "communication": ["modbus_RS485", "communication_protocols", "hardware_interfaces"],
+      "rtos": ["interrupt_handling", "state_machines", "memory_management"],
+      "memory": ["memory_management", "embedded_safety"],
+      "hardware": ["hardware_interfaces", "sensor_integration", "power_management"],
+      "testing": ["testing_strategies", "state_machines"],
+      "power": ["power_management", "hardware_interfaces"],
+      "ota": ["ota_firmware_updates", "embedded_safety"],
+      "sensors": ["sensor_integration", "hardware_interfaces"],
+      "control-flow": ["state_machines", "interrupt_handling"]
+    },
+    "module_type_mapping": {
+      "temp_sensor": [
+        "hardware_interfaces",
+        "sensor_integration",
+        "embedded_safety",
+        "testing_strategies"
+      ],
+      "logger": [
+        "sensor_integration",
+        "communication_protocols",
+        "memory_management",
+        "embedded_safety"
+      ],
+      "comm": [
+        "modbus_RS485",
+        "communication_protocols",
+        "hardware_interfaces",
+        "testing_strategies"
+      ],
+      "ota": [
+        "ota_firmware_updates",
+        "memory_management",
+        "embedded_safety",
+        "power_management"
+      ],
+      "all": [
+        "embedded_safety",
+        "memory_management",
+        "interrupt_handling",
+        "state_machines",
+        "testing_strategies",
+        "power_management"
+      ]
+    },
+    "standards_coverage": {
+      "MISRA-C-2012": ["embedded_safety", "memory_management"],
+      "CERT-C": ["embedded_safety", "memory_management"],
+      "IEC-62304": ["ota_firmware_updates", "embedded_safety"],
+      "IEC-61508": ["testing_strategies"],
+      "AUTOSAR": ["interrupt_handling", "ota_firmware_updates"],
+      "DO-178B": ["testing_strategies"],
+      "ISO-11898": ["communication_protocols"],
+      "I2C-Spec": ["communication_protocols", "hardware_interfaces"],
+      "SPI-Spec": ["communication_protocols", "hardware_interfaces"],
+      "IEC-60870-5-101": ["modbus_RS485"]
+    },
+    "code_pattern_index": {
+      "error-codes": ["embedded_safety", "testing_strategies"],
+      "CRC-verification": ["modbus_RS485", "communication_protocols"],
+      "ISR-pattern": ["interrupt_handling"],
+      "state-enum": ["state_machines"],
+      "filter-pattern": ["sensor_integration"],
+      "firmware-header": ["ota_firmware_updates"],
+      "GPIO-control": ["hardware_interfaces"],
+      "UART-frame": ["hardware_interfaces", "communication_protocols"],
+      "pool-alloc": ["memory_management"],
+      "assert-macro": ["testing_strategies"],
+      "thermal-sensor": ["sensor_integration", "hardware_interfaces"],
+      "modbus-register": ["modbus_RS485", "communication_protocols"]
+    },
+    "search_hints": {
+      "when_module_is_temp_sensor": {
+        "primary": "sensor_integration",
+        "secondary": ["hardware_interfaces", "embedded_safety"],
+        "avoid": ["communication_protocols"]
+      },
+      "when_module_is_logger": {
+        "primary": "memory_management",
+        "secondary": ["sensor_integration", "embedded_safety"],
+        "avoid": []
+      },
+      "when_module_is_comm": {
+        "primary": "modbus_RS485",
+        "secondary": ["communication_protocols", "hardware_interfaces"],
+        "avoid": ["sensor_integration"]
+      },
+      "when_module_is_ota": {
+        "primary": "ota_firmware_updates",
+        "secondary": ["embedded_safety", "memory_management"],
+        "avoid": []
+      },
+      "when_safety_level_is_SIL2": {
+        "primary": ["embedded_safety", "ota_firmware_updates", "testing_strategies"],
+        "secondary": ["interrupt_handling", "memory_management"],
+        "search_weight_multiplier": 1.5
+      }
+    },
+    "query_templates": {
+      "sensor_read": {
+        "keywords": ["sensor", "ADC", "read", "filter", "calibration"],
+        "documents": ["sensor_integration", "hardware_interfaces", "embedded_safety"]
+      },
+      "uart_communication": {
+        "keywords": ["UART", "serial", "frame", "checksum", "baud"],
+        "documents": ["communication_protocols", "hardware_interfaces"]
+      },
+      "modbus_master": {
+        "keywords": ["modbus", "RTU", "register", "CRC", "slave"],
+        "documents": ["modbus_RS485", "communication_protocols", "testing_strategies"]
+      },
+      "ota_update": {
+        "keywords": ["OTA", "firmware", "version", "signature", "rollback"],
+        "documents": ["ota_firmware_updates", "memory_management", "embedded_safety"]
+      },
+      "state_machine": {
+        "keywords": ["state", "FSM", "event", "transition", "handler"],
+        "documents": ["state_machines", "testing_strategies"]
+      },
+      "interrupt_handling": {
+        "keywords": ["ISR", "interrupt", "priority", "race", "atomic"],
+        "documents": ["interrupt_handling", "memory_management", "testing_strategies"]
+      },
+      "memory_safety": {
+        "keywords": ["buffer", "overflow", "malloc", "stack", "heap"],
+        "documents": ["memory_management", "embedded_safety", "testing_strategies"]
+      },
+      "power_optimization": {
+        "keywords": ["sleep", "power", "battery", "frequency", "idle"],
+        "documents": ["power_management", "interrupt_handling", "hardware_interfaces"]
+      }
+    },
+    "retrieval_strategy": {
+      "default": "hybrid",
+      "hybrid_config": {
+        "keyword_match_weight": 0.3,
+        "semantic_match_weight": 0.4,
+        "domain_mapping_weight": 0.2,
+        "document_priority_weight": 0.1
+      },
+      "context_injection_strategy": "adaptive",
+      "max_documents_per_query": 5,
+      "context_token_limit": 2000,
+      "relevance_threshold": 0.65,
+      "fallback_to_full_docs": true
+    }
+  }
+}

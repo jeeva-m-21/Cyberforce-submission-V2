@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "cyberforge-26"
+version = "0.1.0"
+description = "Governed AI platform for embedded firmware generation"
+authors = ["CyberForge Team <dev@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "^8.1"
+pydantic = "^1.10"
+networkx = "^3.0"
+requests = "^2.31"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.0"
+black = "^24.0"
+flake8 = "^6.0"
+mypy = "^1.9"
+pre-commit = "^4.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

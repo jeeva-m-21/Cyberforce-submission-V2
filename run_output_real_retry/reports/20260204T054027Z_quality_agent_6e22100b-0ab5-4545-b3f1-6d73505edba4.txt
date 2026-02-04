@@ -1,0 +1,60 @@
+# Quality and Safety Report: example-system-1 (Static Design Analysis Surrogate)
+
+**Agent:** quality_agent (v1)
+**Date:** [Current Date]
+**Target System ID:** example-system-1
+**Scope:** Design analysis based on module responsibilities. Static analysis identifies potential deviations from MISRA C and CERT secure coding standards in common implementations of the described functionality.
+
+---
+
+## 1. Executive Summary
+
+The system design, comprising a `sensor` module for filtered data acquisition and a `comm` module for telemetry transmission, presents standard challenges related to input validation, data integrity, and communication reliability in an embedded safety context.
+
+Based on the module descriptions, potential high-impact quality risks include integer overflow during sensor filtering and buffer handling errors within the communication stack. A strict adherence to data typing (MISRA C:2012) and boundary checking (CERT) is essential to meet safety goals.
+
+## 2. General Design Observations
+
+| Area | Observation | Quality Impact |
+| :--- | :--- | :--- |
+| **Data Flow** | Filtering (`sensor`) feeding transmission (`comm`). | Requires stringent checking of data output ranges from `sensor` to prevent buffer overflow or misinterpretation by `comm`. |
+| **Resource Mgmt** | Both modules likely interact with hardware (ADC/GPIO for sensor, UART for comm). | Requires careful management of shared resources, global variables, and interrupt service routines (ISRs). |
+| **Real-Time** | Both tasks are time-sensitive (sensor sampling, telemetry rate). | Potential for race conditions if synchronization primitives (or atomic operations) are not used correctly. |
+
+---
+
+## 3. Module-Specific Static Analysis Findings (Design Level)
+
+The following sections detail potential deviations and risks based on the assigned module responsibilities.
+
+### Module: `sensor` (read sensor and provide filtered value)
+
+**Responsibility Focus:** Data acquisition, signal conditioning, filtering.
+
+| Potential Deviation/Risk | Relevant Standard | Rationale & Impact | Actionable Fix (Design/Code) |
+| :--- | :--- | :--- | :--- |
+| **Input Validation/Range** | **CERT INT32-C:** Ensure that operations on signed integers do not result in overflow or underflow. | Sensor readings (raw ADC) must be validated immediately against hardware limits. Failure to validate input bounds before mathematical filtering operations can lead to undefined behavior or silent wrapping, compromising safety. | Implement robust input bounds checking. Use fixed-width integer types (`uint16_t`, `int32_t`) exclusively, adhering to **MISRA C Rule 10.1** (Conversions should not lose information). |
+| **Data Type Mixing** | **MISRA C Rule 10.3:** The value of an expression shall not be assigned to an object with a narrower essential type. | Filtering often involves accumulation or division. If filtering uses intermediate floating-point representations, conversion back to integer must be explicitly handled to avoid precision loss or truncation errors. | Minimize use of floating-point types if possible (**MISRA Advisory**). If floating-point is necessary, use explicit casts and validation logic to handle truncation when converting back to the required fixed-point or integer representation. |
+| **Initialization** | **CERT DCL30-C:** Declare objects with appropriate storage durations and scope. | Sensor hardware registers or configuration variables must be initialized before the first read operation, particularly within an ISR or thread context. | Ensure all local and file-scope variables used for filtering state (e.g., historical samples) are explicitly initialized (**MISRA C Rule 9.1**). |
+
+### Module: `comm` (send telemetry over UART)
+
+**Responsibility Focus:** Serial communication, data serialization, transmission reliability.
+
+| Potential Deviation/Risk | Relevant Standard | Rationale & Impact | Actionable Fix (Design/Code) |
+| :--- | :--- | :--- | :--- |
+| **Buffer Management** | **CERT ARR38-C:** Guarantee that an array is within valid bounds. | Telemetry data must be assembled into a buffer before transmission. Improper indexing or calculating the required buffer size can lead to stack/heap corruption (buffer overflow). | Use safe string/memory functions (`memcpy_s`, `snprintf_s`, or similar verified wrappers). Define buffer sizes using manifest constants, adhering to **MISRA C Rule 7.3** (Avoid implicit dependencies on external definitions of constant array sizes). |
+| **Error Handling** | **CERT ERR50-C:** Ensure that return values are checked. | UART transmission functions often return status codes (e.g., success, buffer full, parity error). Ignoring these codes means the system assumes successful telemetry transmission even when data is lost. | All critical I/O functions (initialization, transmission attempts) must have their return values explicitly checked. Implement logic to retry transmission or log persistent failures (**MISRA C Rule 15.3** regarding reachable return paths). |
+| **Blocking vs. Non-Blocking I/O** | **CERT CON41-C:** Avoid deadlocks. | If the `comm` module uses blocking I/O, a hardware failure or communication stall could lead to task starvation or system deadlock, violating real-time constraints. | Use non-blocking I/O or defined transmission timeouts (watchdogs). If blocking is required for simplicity, ensure the implementation is strictly confined to a dedicated, low-priority thread/task, and that timeouts are implemented (**OTA Best Practice:** Ensure communication failures do not block safety-critical threads). |
+
+---
+
+## 4. Key Actionable Recommendations for Compliance
+
+To ensure compliance with safety and quality standards, the development team must prioritize the following implementations:
+
+1.  **Strict Type Safety (MISRA Mandatory):** Enforce the use of explicit fixed-width integer types (`<stdint.h>`) throughout both modules. Ban implicit type conversions where essential type information could be lost. (MISRA C:2012 Rule 10.3).
+2.  **Input Sanitation (CERT/MISRA Critical):** Before any filtering or calculation in the `sensor` module, implement runtime checks (e.g., assertions or error returns) to confirm that the input data falls within mathematically and physically feasible ranges.
+3.  **Buffer Integrity (CERT Critical):** Review all data serialization/packet creation routines within the `comm` module. Every use of an array index or pointer arithmetic must be provably bounded to prevent overflow. Use static analysis tools configured specifically to detect out-of-bounds access. (CERT ARR38-C).
+4.  **Error Propagation and Logging (Safety Requirement):** The `comm` module must reliably report transmission failures back to a higher-level system supervisor. Design telemetry protocols to include integrity checks (e.g., CRC or checksums) to detect corruption during transfer. (MISRA C:2012 Rule 15.3, CERT ERR50-C).
+5.  **Synchronization Review (Real-Time Safety):** If the `sensor` module writes data used by the `comm` module asynchronously (e.g., via interrupts), ensure that access to shared variables is protected using atomic operations, mutexes, or disabling interrupts momentarily to prevent race conditions. (CERT CON36-C).

@@ -1,0 +1,8 @@
+# Runtime deps (for pip users)
+click>=8.1
+pydantic>=1.10
+networkx>=3.0
+requests>=2.31
+python-dotenv>=1.0.0
+# Optional: Google GenAI SDK (required only if you enable USE_REAL_GEMINI and set GEMINI_API_KEY)
+google-genai>=0.0.0

@@ -1,0 +1,6 @@
+GENERATED (mock): # Base prompt template (versioned)
+
+- **Role:** test_agent
+- **System Context:** CyberForge-26 project instructions (immutable during run)
+- **Constraints:** Deterministic tests only.
+- **RAG Document

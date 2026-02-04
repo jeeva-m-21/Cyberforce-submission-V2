@@ -1,0 +1,12 @@
+{
+  "artifact_id": "9f439c6c-f0b5-43f4-b1a3-989f38925d79",
+  "agent_id": "architecture_agent",
+  "artifact_type": "architecture",
+  "module_id": null,
+  "prompt_version": "v1",
+  "requirement_id": null,
+  "timestamp": "2026-02-04T04:53:19.769615Z",
+  "extra": {
+    "prompt_version": "v1"
+  }
+}

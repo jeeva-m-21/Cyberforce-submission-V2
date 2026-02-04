@@ -1,0 +1,6 @@
+GENERATED (mock): # Base prompt template (versioned)
+
+- **Role:** quality_agent
+- **System Context:** CyberForge-26 project instructions (immutable during run)
+- **Constraints:** Flag MISRA/CERT issues.
+- **RAG Documen
