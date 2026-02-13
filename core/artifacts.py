@@ -13,6 +13,7 @@ Functions:
 from __future__ import annotations
 
 import json
+import logging
 import uuid
 from dataclasses import asdict, dataclass
 from datetime import datetime
@@ -36,8 +37,12 @@ class ArtifactMetadata:
 
 def write_artifact(context: Any, agent_id: str, artifact_type: str, content: str, 
                    metadata: Optional[Dict] = None, module_id: Optional[str] = None, 
-                   prompt_version: str = "v1") -> Path:
-    """Write single-file text artifact with metadata sidecar."""
+                   prompt_version: str = "v1", extension: str = "txt") -> Path:
+    """Write single-file text artifact with metadata sidecar.
+    
+    Args:
+        extension: File extension (without dot), e.g. "txt", "md", "c", "ino"
+    """
     resource = artifact_type if not module_id else f"{artifact_type}:{module_id}"
     context.mcp.check_write(agent_id, resource, metadata)
 
@@ -48,7 +53,7 @@ def write_artifact(context: Any, agent_id: str, artifact_type: str, content: str
     timestamp_iso = datetime.utcnow().isoformat() + "Z"
     timestamp_safe = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
     safe_agent_id = agent_id.replace(":", "_")
-    filename = f"{timestamp_safe}_{safe_agent_id}_{artifact_id}.txt"
+    filename = f"{timestamp_safe}_{safe_agent_id}_{artifact_id}.{extension}"
     file_path = out_dir / filename
 
     file_path.write_text(content, encoding="utf-8")
@@ -67,6 +72,14 @@ def write_artifact(context: Any, agent_id: str, artifact_type: str, content: str
     meta_path = file_path.with_suffix(".meta.json")
     meta_path.write_text(json.dumps(asdict(meta), indent=2), encoding="utf-8")
 
+    # For quality reports, also create a standardized "latest" copy
+    if agent_id == "quality_agent" and artifact_type == "reports":
+        try:
+            latest_path = out_dir / "quality_report_latest.json"
+            latest_path.write_text(content, encoding="utf-8")
+        except Exception as e:
+            logging.warning(f"Could not create quality_report_latest.json: {e}")
+
     return file_path
 
 
@@ -80,6 +93,11 @@ def write_modular_code(context: Any, agent_id: str, module_id: str,
     Returns dict with keys "header" and "source" pointing to files.
     Creates shared metadata.json tracking both files.
     """
+    if not module_id:
+        raise ValueError(f"module_id cannot be None or empty. Received: {module_id}")
+    if not context.run_output_dir:
+        raise ValueError(f"context.run_output_dir cannot be None. Context: {context}")
+    
     resource = f"module_code:{module_id}"
     context.mcp.check_write(agent_id, resource, metadata)
 
@@ -162,4 +180,54 @@ def write_json_artifact(context: Any, agent_id: str, artifact_type: str,
     meta_path = file_path.with_suffix(".meta.json")
     meta_path.write_text(json.dumps(asdict(meta), indent=2), encoding="utf-8")
 
+    return file_path
+
+def write_single_file_code(context: Any, agent_id: str, project_name: str,
+                            code_content: str, metadata: Optional[Dict] = None,
+                            prompt_version: str = "v1", extension: str = "ino") -> Path:
+    """
+    Write single-file code artifact (e.g., Arduino .ino file).
+    
+    Args:
+        project_name: Name of the project (used for filename)
+        code_content: The complete code content
+        extension: File extension (ino, cpp, c, etc.)
+    
+    Returns:
+        Path to the created file
+    """
+    resource = f"firmware:{project_name}"
+    context.mcp.check_write(agent_id, resource, metadata)
+
+    artifact_type = "firmware"
+    out_dir = context.run_output_dir / artifact_type
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    artifact_id = str(uuid.uuid4())
+    timestamp_iso = datetime.utcnow().isoformat() + "Z"
+    timestamp_safe = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    
+    # Use project name for Arduino files
+    filename = f"{project_name}.{extension}"
+    file_path = out_dir / filename
+    
+    # Write code file
+    file_path.write_text(code_content, encoding="utf-8")
+    
+    # Create metadata
+    meta = ArtifactMetadata(
+        artifact_id=artifact_id,
+        agent_id=agent_id,
+        artifact_type=artifact_type,
+        module_id=None,
+        prompt_version=prompt_version,
+        requirement_id=metadata.get("requirement_id") if metadata else None,
+        timestamp=timestamp_iso,
+        artifact_format="single_file",
+        extra={**(metadata or {})},
+    )
+    
+    meta_path = file_path.with_suffix(f".{extension}.meta.json")
+    meta_path.write_text(json.dumps(asdict(meta), indent=2), encoding="utf-8")
+    
     return file_path

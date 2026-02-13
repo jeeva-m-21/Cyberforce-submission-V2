@@ -1,0 +1,262 @@
+## Quality Report Naming Standard - Executive Summary
+
+### The Problem (Before)
+Quality reports were saved with complex timestamped names:
+```
+20260204T194906Z_quality_agent_8700268a-49ff-4033-af9e-91fb614a0c80.txt
+```
+❌ Hard to remember  
+❌ Hard to script  
+❌ Easy to parse wrong  
+❌ Unclear which is latest  
+
+### The Solution (Now)
+Quality reports use a **standardized naming convention**:
+```
+Latest:    quality_report_latest.json          ← Simple, standard name
+Archive:   20260204T194906Z_quality_agent_*.txt  ← Historical record
+```
+✅ Simple and memorable  
+✅ Easy to script and access  
+✅ Clear naming intent  
+✅ Full history preserved  
+
+---
+
+## What Changed (3 Files)
+
+### 1️⃣ Backend API (`backend_api/main.py`)
+- **What**: Prioritize `quality_report_latest.json` in response
+- **Where**: `/api/runs/{run_id}/logs` endpoint (lines 405-419)
+- **Why**: Latest report always first in array
+
+```
+API Response:
+{
+  "quality_reports": [
+    { "filename": "quality_report_latest.json", "data": {...} },  ← Latest
+    { "filename": "20260204T194906Z_quality_agent_*.txt", ... },   ← v2
+    { "filename": "20260204T181341Z_quality_agent_*.txt", ... }    ← v1
+  ]
+}
+```
+
+### 2️⃣ Artifact Writer (`core/artifacts.py`)
+- **What**: Auto-create `quality_report_latest.json` after generation
+- **Where**: `write_artifact()` function (lines 68-72)
+- **Why**: Standardized name always available without parsing
+
+```python
+if agent_id == "quality_agent" and artifact_type == "reports":
+    latest_path = out_dir / "quality_report_latest.json"
+    latest_path.write_text(content, encoding="utf-8")
+```
+
+### 3️⃣ Frontend Display (`QualityReportViewer.tsx`)
+- **What**: Mark latest report with ⭐ star
+- **Where**: Report selector buttons (lines 104-135)
+- **Why**: User can instantly see which report is current
+
+```
+⭐ Latest Report  [Current]      Score: 85  ← New!
+  2/4, 7:49 PM                   Score: 82
+  2/4, 1:13 PM                   Score: 79
+```
+
+---
+
+## File Structure
+
+### Before
+```
+reports/
+├── 20260204T194906Z_quality_agent_8700268a.txt
+├── 20260204T181341Z_quality_agent_b6a938c9.txt
+└── 20260204T171505Z_quality_agent_d6271b44.txt
+```
+Hard to know which is latest!
+
+### After
+```
+reports/
+├── quality_report_latest.json              ⭐ Always newest
+├── 20260204T194906Z_quality_agent_*.txt    Archive (v3, newest)
+├── 20260204T181341Z_quality_agent_*.txt    Archive (v2)
+└── 20260204T171505Z_quality_agent_*.txt    Archive (v1, oldest)
+```
+Crystal clear!
+
+---
+
+## How It Works
+
+```
+┌────────────────────────┐
+│ Quality Agent          │
+│ Generates Report       │
+└────────┬───────────────┘
+         ↓
+┌────────────────────────────────────────────────────┐
+│ write_artifact()                                   │
+│ 1. Save timestamped: 20260204T194906Z_quality_...  │
+│ 2. Create latest:    quality_report_latest.json    │
+└────────┬───────────────────────────────────────────┘
+         ↓
+┌────────────────────────────────────────────────────┐
+│ API /runs/{id}/logs                                │
+│ Returns array:                                      │
+│ [quality_report_latest.json, archive1, archive2]  │
+└────────┬───────────────────────────────────────────┘
+         ↓
+┌────────────────────────────────────────────────────┐
+│ Frontend QualityReportViewer                       │
+│ Shows: ⭐ Latest Report [first button]             │
+│        Archive buttons [other buttons]             │
+└────────────────────────────────────────────────────┘
+```
+
+---
+
+## Runtime Access Patterns
+
+### For Latest Report
+```python
+# API
+GET /api/runs/Simple_UART_Logger/logs
+response.quality_reports[0]  # Always latest
+
+# File System
+output/runs/Simple_UART_Logger/reports/quality_report_latest.json
+
+# Both give you the SAME content, different access methods
+```
+
+### For Report History
+```python
+# API
+response.quality_reports[1:]  # Remaining reports
+
+# File System
+output/runs/Simple_UART_Logger/reports/20260204T*.txt  # All archives
+```
+
+---
+
+## Key Metrics
+
+| Metric | Before | After |
+|--------|--------|-------|
+| Lines to find latest | 5-10 | 0 (direct access) |
+| Filename length | 80+ chars | 26 chars |
+| Parse complexity | High | None |
+| Clarity for user | Low | High |
+| Script friendliness | Hard | Easy |
+| Backward compat | N/A | 100% |
+
+---
+
+## Real-World Example
+
+### Scenario: Generate firmware 3 times, check latest
+
+**Before:**
+```powershell
+# 😞 Confusing! Which is latest?
+dir output/runs/Simple_UART_Logger/reports/ | grep quality_agent
+20260204T194906Z_quality_agent_8700268a.txt
+20260204T181341Z_quality_agent_b6a938c9.txt
+20260204T171505Z_quality_agent_d6271b44.txt
+
+# Have to parse timestamp and sort manually...
+```
+
+**After:**
+```powershell
+# ✨ Simple and clear!
+dir output/runs/Simple_UART_Logger/reports/ | grep latest
+quality_report_latest.json  ← This is it!
+
+# Or via API:
+Invoke-RestMethod /api/runs/Simple_UART_Logger/logs |
+  % { $_.quality_reports[0].filename }
+quality_report_latest.json  ← Same result, confirmed!
+```
+
+---
+
+## Testing Instructions
+
+### Quick Test (5 minutes)
+
+```powershell
+# 1. Restart backend
+cd backend_api
+python main.py
+
+# 2. Check new generation creates latest file
+dir output/runs/Simple_UART_Logger/reports/quality_report_latest.json
+
+# 3. Test API
+$r = Invoke-RestMethod http://localhost:8000/api/runs/Simple_UART_Logger/logs
+$r.quality_reports[0].filename  # Should show: quality_report_latest.json
+
+# 4. Check frontend
+# Visit http://localhost:3000 → Quality Report tab
+# Should see: ⭐ Latest Report [marked with star]
+```
+
+### Full Test (10 minutes)
+
+1. Restart backend
+2. Generate new project in UI
+3. Check "Quality Report" tab
+4. Verify "⭐ Latest Report" appears
+5. Click on it to view details
+6. Check file system: `quality_report_latest.json` exists
+7. Run API test
+8. Verify full workflow
+
+---
+
+## Deployment Checklist
+
+- [x] Code changes complete (3 files)
+- [x] Syntax verified (no errors)
+- [x] Documentation created (5 files)
+- [x] Backward compatible (old projects work)
+- [x] No breaking changes (API format compatible)
+- [x] Auto-creation works (in write_artifact)
+
+**Ready to deploy!** Just restart the backend.
+
+---
+
+## FAQ
+
+**Q: Do I need to regenerate existing projects?**  
+A: No, old projects still work. New generations will create `quality_report_latest.json`.
+
+**Q: Will my old timestamped files be deleted?**  
+A: No, they're preserved for history. The latest file is created alongside them.
+
+**Q: What if latest file fails to create?**  
+A: Generation continues normally. You'll see a warning in logs but the report is saved.
+
+**Q: Can I access historical reports?**  
+A: Yes! API returns them as `quality_reports[1:]`, sorted by newest first.
+
+**Q: Is this backward compatible?**  
+A: 100%. All existing code continues to work. New feature is additive only.
+
+---
+
+## Bottom Line
+
+✨ **Quality reports now have a simple, memorable naming standard**
+
+- **Latest**: `quality_report_latest.json` (concise, scriptable)
+- **History**: `{TIMESTAMP}_quality_agent_{UUID}.txt` (unique, sortable)
+- **Display**: "⭐ Latest Report" (clear visual marker)
+- **Result**: Easy to use, maintain, and script
+
+**Status**: ✅ Ready to deploy. Just restart backend!

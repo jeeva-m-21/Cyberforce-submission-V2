@@ -1,0 +1,34 @@
+{
+  "project_name": "Arduino_LED_Control",
+  "target_mcu": "Arduino Uno",
+  "optimization_goal": "balanced",
+  "description": "Simple Arduino project with LED control, button input, and serial communication for debugging",
+  "requirements": [
+    "Control LED on pin 13 with digital output",
+    "Read button state from pin 2 with internal pull-up",
+    "Send status messages via Serial at 9600 baud",
+    "Toggle LED when button is pressed",
+    "Display button press count on Serial monitor",
+    "Handle debouncing for button input"
+  ],
+  "modules": [
+    {
+      "id": "led_control",
+      "name": "LED Control Module",
+      "type": "gpio",
+      "description": "Controls built-in LED on pin 13 for visual feedback"
+    },
+    {
+      "id": "button_input",
+      "name": "Button Input Module",
+      "type": "gpio",
+      "description": "Reads digital button state from pin 2 with debouncing"
+    },
+    {
+      "id": "serial_comm",
+      "name": "Serial Communication",
+      "type": "uart",
+      "description": "UART communication for debugging and status messages at 9600 baud"
+    }
+  ]
+}

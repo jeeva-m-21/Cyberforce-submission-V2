@@ -1,0 +1,69 @@
+{
+  "project_name": "Motor Controller v2",
+  "description": "High-performance motor control system with real-time feedback",
+  "target_platform": "STM32F407",
+  "modules": [
+    {
+      "name": "UART_DEBUG",
+      "type": "uart",
+      "description": "Debug communication interface",
+      "parameters": {
+        "baudrate": 115200,
+        "data_bits": 8,
+        "parity": "none",
+        "stop_bits": 1,
+        "pins": {
+          "tx": "PA9",
+          "rx": "PA10"
+        },
+        "interrupt": true
+      }
+    },
+    {
+      "name": "SPI_MOTOR",
+      "type": "spi",
+      "description": "Motor driver SPI interface",
+      "parameters": {
+        "baudrate": 1000000,
+        "mode": 3,
+        "data_order": "MSB",
+        "pins": {
+          "clk": "PA5",
+          "mosi": "PA7",
+          "miso": "PA6",
+          "cs": "PA4"
+        }
+      }
+    },
+    {
+      "name": "ENCODER_INPUT",
+      "type": "timer",
+      "description": "Encoder feedback timer",
+      "parameters": {
+        "timer": "TIM3",
+        "resolution": 65536,
+        "pins": {
+          "ch1": "PB4",
+          "ch2": "PB5"
+        }
+      }
+    }
+  ],
+  "requirements": [
+    "Real-time response < 1ms",
+    "Motor speed 0-10000 RPM",
+    "Operating temperature -20°C to 70°C",
+    "CAN bus communication at 500kbps",
+    "Redundant fault detection"
+  ],
+  "constraints": {
+    "max_flash": 1048576,
+    "max_ram": 196608,
+    "clock_speed": 168000000
+  },
+  "safety_critical": true,
+  "optimization_goal": "speed",
+  "include_tests": true,
+  "include_docs": true,
+  "run_quality_checks": true
+}

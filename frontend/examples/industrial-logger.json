@@ -1,0 +1,122 @@
+{
+  "project_name": "Industrial Data Logger",
+  "description": "Industrial-grade data acquisition system with SD card logging and Ethernet",
+  "target_platform": "STM32L476",
+  "modules": [
+    {
+      "name": "UART1_MODBUS",
+      "type": "uart",
+      "description": "Modbus RTU master interface",
+      "parameters": {
+        "baudrate": 19200,
+        "data_bits": 8,
+        "parity": "even",
+        "stop_bits": 1,
+        "pins": {
+          "tx": "PA9",
+          "rx": "PA10"
+        },
+        "timeout": 1000
+      }
+    },
+    {
+      "name": "I2C1_SENSORS",
+      "type": "i2c",
+      "description": "I2C bus for temperature, pressure, humidity sensors",
+      "parameters": {
+        "clock_frequency": 400000,
+        "pins": {
+          "sda": "PB7",
+          "scl": "PB6"
+        },
+        "devices": [
+          {"address": "0x76", "sensor": "BME280"},
+          {"address": "0x68", "sensor": "MPU6050"}
+        ]
+      }
+    },
+    {
+      "name": "SPI_SDCARD",
+      "type": "spi",
+      "description": "SD card interface for data logging",
+      "parameters": {
+        "clock_speed": 25000000,
+        "mode": 0,
+        "pins": {
+          "clk": "PA5",
+          "mosi": "PA7",
+          "miso": "PA6",
+          "cs": "PB5"
+        }
+      }
+    },
+    {
+      "name": "CAN1_INDUSTRIAL",
+      "type": "can",
+      "description": "Industrial CAN 2.0B interface",
+      "parameters": {
+        "bitrate": 250000,
+        "pins": {
+          "tx": "PA12",
+          "rx": "PA11"
+        }
+      }
+    },
+    {
+      "name": "ETHERNET_PHY",
+      "type": "ethernet",
+      "description": "Ethernet interface for network connectivity",
+      "parameters": {
+        "interface": "RMII",
+        "pins": {
+          "mdc": "PC1",
+          "mdio": "PA2",
+          "rxd0": "PC4",
+          "rxd1": "PC5",
+          "rxer": "PI10",
+          "rxdv": "PA7",
+          "txd0": "PG13",
+          "txd1": "PG14",
+          "txen": "PG11"
+        }
+      }
+    },
+    {
+      "name": "WATCHDOG",
+      "type": "watchdog",
+      "description": "Independent watchdog for system monitoring",
+      "parameters": {
+        "timeout": 5000,
+        "reload_value": 4095
+      }
+    },
+    {
+      "name": "EEPROM_CONFIG",
+      "type": "eeprom",
+      "description": "EEPROM for configuration storage",
+      "parameters": {
+        "size": 4096,
+        "address": "0x50"
+      }
+    }
+  ],
+  "requirements": [
+    "Modbus RTU slave count: 16",
+    "Data logging rate: 1 sample/second",
+    "Storage capacity: 1GB minimum",
+    "Network uptime: 99.9%",
+    "Operating temperature: -10°C to 60°C",
+    "Humidity: 0-95% RH non-condensing",
+    "Industrial EMC compliance required",
+    "Redundant communication paths"
+  ],
+  "constraints": {
+    "max_flash": 1048576,
+    "max_ram": 98304,
+    "clock_speed": 80000000,
+    "power_consumption": 500,
+    "operating_voltage": "24V ±10%"
+  },
+  "safety_critical": true,
+  "optimization_goal": "balanced"
+}

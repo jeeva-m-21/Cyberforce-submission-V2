@@ -33,8 +33,9 @@ class MockGemini(LLMClient):
 
 
 class GeminiClient(LLMClient):
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, model_name: Optional[str] = None):
         self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
+        self.model_name = model_name or os.environ.get("GEMINI_MODEL") or "gemini-flash-latest"
         if not self.api_key:
             raise RuntimeError("No GEMINI_API_KEY configured for GeminiClient")
         # lazily import the official GenAI client
@@ -50,7 +51,7 @@ class GeminiClient(LLMClient):
 
         Retries are attempted on transient server-side errors (5xx / ServerError / UNAVAILABLE).
         """
-        logger.debug("GeminiClient: generating content (max_tokens=%s)", max_tokens)
+        logger.debug("GeminiClient: generating content (max_tokens=%s, model=%s)", max_tokens, self.model_name)
         client = self._genai.Client(api_key=self.api_key)
 
         max_attempts = 3
@@ -59,7 +60,7 @@ class GeminiClient(LLMClient):
 
         for attempt in range(1, max_attempts + 1):
             try:
-                response = client.models.generate_content(model="gemini-flash-latest", contents=prompt)
+                response = client.models.generate_content(model=self.model_name, contents=prompt)
                 text = getattr(response, "text", None)
                 if text is None:
                     text = str(response)
@@ -99,6 +100,21 @@ def create_llm_client() -> LLMClient:
     # Default to MockGemini for tests and local development. To use a real Gemini client,
     # set USE_REAL_GEMINI=1 and provide GEMINI_API_KEY in the environment.
     use_real = os.environ.get("USE_REAL_GEMINI") in ("1", "true", "True")
-    if use_real and os.environ.get("GEMINI_API_KEY"):
-        return GeminiClient()
+    key_present = bool(os.environ.get("GEMINI_API_KEY"))
+    logger.info(f"create_llm_client: USE_REAL_GEMINI={use_real}, GEMINI_API_KEY_present={key_present}")
+    
+    if use_real:
+        if not key_present:
+            logger.warning("USE_REAL_GEMINI requested but GEMINI_API_KEY missing; falling back to MockGemini")
+            return MockGemini()
+        try:
+            logger.info("Attempting to create GeminiClient...")
+            client = GeminiClient()
+            logger.info(f"✅ GeminiClient created successfully with model={client.model_name}")
+            return client
+        except Exception as exc:
+            logger.exception("Failed to initialize GeminiClient, falling back to MockGemini: %s", exc)
+            return MockGemini()
+    
+    logger.info("Using MockGemini (USE_REAL_GEMINI not set to 1)")
     return MockGemini()

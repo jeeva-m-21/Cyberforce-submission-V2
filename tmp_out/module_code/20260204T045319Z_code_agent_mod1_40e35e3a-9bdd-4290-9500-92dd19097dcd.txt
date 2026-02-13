@@ -1,6 +1,0 @@
-GENERATED (mock): # Base prompt template (versioned)
-
-- **Role:** code_agent
-- **System Context:** CyberForge-26 project instructions (immutable during run)
-- **Constraints:** No dynamic memory unless allowed.
-- **RAG 

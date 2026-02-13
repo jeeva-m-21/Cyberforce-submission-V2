@@ -4,6 +4,7 @@ This is an intentionally minimal, auditable implementation with explicit orderin
 from __future__ import annotations
 
 import logging
+import os
 from dataclasses import dataclass
 from typing import Any, Dict, List
 from pathlib import Path
@@ -22,19 +23,26 @@ class OrchestrationResult:
 
 
 class ExecutionContext:
-    def __init__(self, mcp: "MCP", rag: "RAG", llm: "LLMClient", prompt_loader: "PromptLoader", output_dir: str = "output", run_id: str = None):
+    def __init__(self, mcp: "MCP", rag: "RAG", llm: "LLMClient", prompt_loader: "PromptLoader", output_dir: str = "output", run_id: str = None, project_name: str = None, payload: Dict[str, Any] = None):
         self.mcp = mcp
         self.rag = rag
         self.llm = llm
         self.prompt_loader = prompt_loader
         self.output_dir = output_dir
         self.run_id = run_id or datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
-        self.run_output_dir = Path(output_dir) / "runs" / self.run_id
+        # Use project name as folder if provided, otherwise use timestamp
+        folder_name = project_name.replace(" ", "_").replace("-", "_") if project_name else self.run_id
+        self.run_output_dir = Path(output_dir) / "runs" / folder_name
         self.run_output_dir.mkdir(parents=True, exist_ok=True)
+        # Store MCU and board specifications for agent access
+        self.payload = payload or {}
+        self.target_mcu = self.payload.get("target_mcu", "Unknown")
+        self.optimization_goal = self.payload.get("optimization_goal", "balanced")
+        self.modules = self.payload.get("modules", [])
 
 
 class Orchestrator:
-    def __init__(self, input_payload: Dict[str, Any], agent_factories: Dict[str, any] | None = None, mcp_role_permissions: Dict[str, set] | None = None, output_dir: str = "output"):
+    def __init__(self, input_payload: Dict[str, Any], agent_factories: Dict[str, any] | None = None, mcp_role_permissions: Dict[str, set] | None = None, output_dir: str = "output", run_id: str | None = None, use_real_gemini: bool = False):
         self.payload = input_payload
         self.graph = nx.DiGraph()
         self._build_pipeline()
@@ -43,6 +51,8 @@ class Orchestrator:
         # Allow injection of custom MCP role permissions for tests
         self._mcp_role_permissions = mcp_role_permissions
         self.output_dir = output_dir
+        self.run_id = run_id
+        self.use_real_gemini = use_real_gemini
 
     def _build_pipeline(self) -> None:
         # Deterministic ordering enforced here — architecture -> code -> test -> quality -> build
@@ -69,14 +79,27 @@ class Orchestrator:
         from agents.quality_agent import QualityAgent
         from agents.build_agent import BuildAgent
 
+        # Set up LLM provider BEFORE creating the client
+        if self.use_real_gemini:
+            os.environ["USE_REAL_GEMINI"] = "1"
+            logger.info("Orchestrator.run(): SET USE_REAL_GEMINI=1 (Gemini requested)")
+        else:
+            os.environ["USE_REAL_GEMINI"] = "0"
+            logger.info("Orchestrator.run(): SET USE_REAL_GEMINI=0 (Mock requested)")
+
         mcp = MCP(audit_log=Path(self.output_dir) / "mcp_audit.log", role_permissions=self._mcp_role_permissions)
         rag = RAG(Path("rag_docs"))
+        
+        logger.info(f"About to create LLM client - USE_REAL_GEMINI={os.environ.get('USE_REAL_GEMINI')}, GEMINI_API_KEY_present={bool(os.environ.get('GEMINI_API_KEY'))}")
         llm = create_llm_client()
+        logger.info(f"LLM client created: {type(llm).__name__}")
         prompt_loader = PromptLoader(Path("prompts"))
-        run_id = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
-        ctx = ExecutionContext(mcp=mcp, rag=rag, llm=llm, prompt_loader=prompt_loader, output_dir=self.output_dir, run_id=run_id)
+        run_id = self.run_id or datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+        project_name = self.payload.get("project_name")
+        ctx = ExecutionContext(mcp=mcp, rag=rag, llm=llm, prompt_loader=prompt_loader, output_dir=self.output_dir, run_id=run_id, project_name=project_name, payload=self.payload)
 
         details: Dict[str, Any] = {}
+        architecture_only = bool(self.payload.get("architecture_only"))
 
         try:
             for node in nx.topological_sort(self.graph):
@@ -95,22 +118,70 @@ class Orchestrator:
                         return OrchestrationResult(success=False, message=str(mv), details=details)
 
                 elif node == "code_agents":
+                    if architecture_only:
+                        logger.info("Architecture-only mode: skipping code agents")
+                        break
+                    
+                    # Determine code generation strategy based on MCU hardware
+                    from agents.code_agent import CodeAgent as CodeAgentClass
+                    target_mcu = self.payload.get("target_mcu", "").lower()
+                    mcu_format = CodeAgentClass.determine_mcu_format(target_mcu)
+                    is_single_file = mcu_format["is_single_file"]
+                    framework = mcu_format["framework"]
+                    
                     modules = self.payload.get("modules", [])
-                    for mod in modules:
-                        module_id = mod.get("id")
+                    
+                    if is_single_file:
+                        # Single-file firmware (Arduino, ESP32-Arduino, RP2040, etc.)
+                        logger.info(f"Single-file MCU detected ({framework}): generating unified firmware file")
+                        
                         factory = self.agent_factories.get("code_agent", CodeAgent)
-                        agent = factory(module_id)
+                        project_name = self.payload.get("project_name", "firmware")
+                        agent = factory("unified_firmware")
+                        
                         try:
                             mcp.check_run(agent.agent_id)
-                            res = agent.execute(ctx, mod)
+                            # Pass ALL modules and hardware context
+                            unified_input = {
+                                "id": project_name.replace(" ", "_"),
+                                "name": project_name,
+                                "type": "unified",
+                                "target_mcu": self.payload.get("target_mcu"),
+                                "modules": modules,
+                                "all_modules": modules,
+                                "project_name": project_name
+                            }
+                            res = agent.execute(ctx, unified_input)
                             details[agent.agent_id] = res
                             if not res.success:
                                 return OrchestrationResult(success=False, message=f"{agent.agent_id} failed: {res.message}", details=details)
                         except MCPViolation as mv:
                             logger.error("MCP violation during %s: %s", agent.agent_id, mv)
                             return OrchestrationResult(success=False, message=str(mv), details=details)
+                    else:
+                        # Modular firmware (STM32, nRF52, PIC32, etc.)
+                        logger.info(f"Modular MCU detected ({framework}): generating per-module code")
+                        for mod in modules:
+                            module_id = mod.get("id")
+                            if not module_id:
+                                logger.warning("Module missing 'id' field, skipping: %s", mod)
+                                continue
+                            factory = self.agent_factories.get("code_agent", CodeAgent)
+                            agent = factory(module_id)
+                            try:
+                                mcp.check_run(agent.agent_id)
+                                res = agent.execute(ctx, mod)
+                                details[agent.agent_id] = res
+                                if not res.success:
+                                    return OrchestrationResult(success=False, message=f"{agent.agent_id} failed: {res.message}", details=details)
+                            except MCPViolation as mv:
+                                logger.error("MCP violation during %s: %s", agent.agent_id, mv)
+                                return OrchestrationResult(success=False, message=str(mv), details=details)
 
                 elif node == "test_agent":
+                    if architecture_only:
+                        logger.info("Architecture-only mode: skipping test agent")
+                        break
                     factory = self.agent_factories.get("test_agent", TestAgent)
                     agent = factory()
                     try:
@@ -124,6 +195,9 @@ class Orchestrator:
                         return OrchestrationResult(success=False, message=str(mv), details=details)
 
                 elif node == "quality_agent":
+                    if architecture_only:
+                        logger.info("Architecture-only mode: skipping quality agent")
+                        break
                     factory = self.agent_factories.get("quality_agent", QualityAgent)
                     agent = factory()
                     try:
@@ -137,6 +211,9 @@ class Orchestrator:
                         return OrchestrationResult(success=False, message=str(mv), details=details)
 
                 elif node == "build_agent":
+                    if architecture_only:
+                        logger.info("Architecture-only mode: skipping build agent")
+                        break
                     factory = self.agent_factories.get("build_agent", BuildAgent)
                     agent = factory()
                     try:

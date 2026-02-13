@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --bg-900: #000000;
+  --bg-800: #0A0A0A;
+  --bg-700: #111111;
+  --bg-600: #18181B;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A1A1AA;
+  --accent: #0070F3;
+  --muted: #A1A1AA;
+  --border: rgba(255,255,255,0.06);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  background-color: var(--bg-900);
+  color: var(--text-primary);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+}
+
+/* Dark mode overrides */
+.dark body {
+  background-color: #0b0f14;
+  color: #e5e7eb;
+}
+
+/* Surface / tokens used across components */
+.surface {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+}
+
+.text-muted {
+  color: var(--text-secondary);
+}
+
+.border-var {
+  border-color: var(--border);
+}
+
+.input-base {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: inherit;
+}
+
+/* Panels and responsive adjustments */
+.panel {
+  min-height: 48vh;
+}
+
+/* Ensure center column can shrink without overflow issues */
+.flex-1 { min-width: 0 }
+
+/* Scrollbar styling for large code panels */
+.surface::-webkit-scrollbar { width: 10px; height: 10px }
+.surface::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.04); border-radius: 8px }
+.surface::-webkit-scrollbar-track { background: transparent }
+
+.bg-page { background: var(--bg-900); }
+
+input, select, textarea { background-color: transparent; }
+
+pre { background-color: #071018; }
+
+/* Accent utilities */
+.accent { color: var(--accent) }
+.bg-accent { background-color: var(--accent) }

@@ -4,6 +4,13 @@
 
 Project goal: Build a governed AI system for deterministic, auditable generation of embedded C/C++ firmware and associated artifacts (tests, reports, OTA images). This repository contains the scaffolding for the system described in `instruct.txt` and follows the mandated layered architecture.
 
+Summary:
+- End-to-end pipeline to generate architecture, code, tests, quality reports, and build logs for embedded firmware.
+- Deterministic, auditable outputs with traceable metadata and strict artifact management.
+- Modular agent design (architecture, code, test, quality, build) orchestrated by a central runner.
+- RAG-backed grounding documents and versioned prompts for controlled generation.
+- Outputs stored in a structured run directory for inspection and reuse.
+
 Repository layout (strict):
 
 - `core/` — orchestration, MCP, RAG

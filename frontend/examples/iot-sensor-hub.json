@@ -1,0 +1,58 @@
+{
+  "project_name": "IoT Sensor Hub",
+  "description": "Multi-sensor data acquisition system with wireless communication",
+  "target_platform": "ESP32",
+  "modules": [
+    {
+      "name": "I2C_SENSORS",
+      "type": "i2c",
+      "description": "I2C bus for temperature and humidity sensors",
+      "parameters": {
+        "clock_frequency": 400000,
+        "slave_address": "0x68",
+        "pins": {
+          "sda": "GPIO21",
+          "scl": "GPIO22"
+        }
+      }
+    },
+    {
+      "name": "ADC_VOLTAGE",
+      "type": "adc",
+      "description": "Analog voltage monitoring",
+      "parameters": {
+        "resolution": 12,
+        "sampling_rate": 1000,
+        "channels": [
+          {"pin": "GPIO36", "attenuation": "11dB"}
+        ]
+      }
+    },
+    {
+      "name": "BLE_COMM",
+      "type": "uart",
+      "description": "Bluetooth LE module communication",
+      "parameters": {
+        "baudrate": 9600,
+        "pins": {
+          "tx": "GPIO17",
+          "rx": "GPIO16"
+        }
+      }
+    }
+  ],
+  "requirements": [
+    "Real-time sensor sampling at 1kHz",
+    "Low power consumption < 100mA",
+    "Bluetooth LE range > 50m",
+    "Operating temperature 0°C to 40°C",
+    "Data logging every 60 seconds"
+  ],
+  "constraints": {
+    "max_flash": 4194304,
+    "max_ram": 520192,
+    "clock_speed": 240000000
+  },
+  "safety_critical": false,
+  "optimization_goal": "power"
+}

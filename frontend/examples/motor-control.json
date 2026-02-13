@@ -1,0 +1,111 @@
+{
+  "project_name": "Motor Control System",
+  "description": "Real-time motor control with CAN bus integration and safety monitoring",
+  "target_platform": "STM32F407",
+  "modules": [
+    {
+      "name": "UART_DEBUG",
+      "type": "uart",
+      "description": "Debug and diagnostic interface",
+      "parameters": {
+        "baudrate": 115200,
+        "data_bits": 8,
+        "parity": "none",
+        "stop_bits": 1,
+        "pins": {
+          "tx": "PA9",
+          "rx": "PA10"
+        },
+        "interrupt": true
+      }
+    },
+    {
+      "name": "SPI_MOTOR_DRV",
+      "type": "spi",
+      "description": "SPI interface to motor driver IC",
+      "parameters": {
+        "clock_speed": 10000000,
+        "mode": 3,
+        "pins": {
+          "clk": "PA5",
+          "mosi": "PA7",
+          "miso": "PA6",
+          "cs": "PA4"
+        }
+      }
+    },
+    {
+      "name": "CAN_BUS",
+      "type": "can",
+      "description": "CAN bus for network communication",
+      "parameters": {
+        "bitrate": 500000,
+        "pins": {
+          "tx": "PA12",
+          "rx": "PA11"
+        },
+        "filters": [
+          {"id": "0x100", "mask": "0x7FF"}
+        ]
+      }
+    },
+    {
+      "name": "ENCODER_FEEDBACK",
+      "type": "timer",
+      "description": "Encoder feedback using timer capture",
+      "parameters": {
+        "timer": "TIM3",
+        "resolution": 65536,
+        "pins": {
+          "ch1": "PB4",
+          "ch2": "PB5"
+        }
+      }
+    },
+    {
+      "name": "PWM_CONTROL",
+      "type": "pwm",
+      "description": "PWM output for motor speed control",
+      "parameters": {
+        "frequency": 20000,
+        "resolution": 12,
+        "timer": "TIM1",
+        "pins": {
+          "ch1": "PA8",
+          "ch2": "PA9",
+          "ch3": "PA10"
+        }
+      }
+    },
+    {
+      "name": "CURRENT_SENSE",
+      "type": "adc",
+      "description": "Motor current monitoring via ADC",
+      "parameters": {
+        "resolution": 12,
+        "sampling_rate": 10000,
+        "channels": [
+          {"pin": "PA0", "label": "phase_a"},
+          {"pin": "PA1", "label": "phase_b"}
+        ]
+      }
+    }
+  ],
+  "requirements": [
+    "Real-time response < 1ms",
+    "Motor speed range 0-10000 RPM",
+    "Current limit 30A with overcurrent protection",
+    "Operating temperature -20°C to 80°C",
+    "CAN communication with 10ms message interval",
+    "Redundant fault detection and safe shutdown",
+    "Encoder resolution 4096 counts/rev"
+  ],
+  "constraints": {
+    "max_flash": 1048576,
+    "max_ram": 196608,
+    "clock_speed": 168000000,
+    "max_power": 50
+  },
+  "safety_critical": true,
+  "optimization_goal": "speed"
+}

@@ -1,0 +1,27 @@
+{
+  "project_name": "Simple UART Logger",
+  "description": "Basic firmware with debug UART output",
+  "target_platform": "STM32F103",
+  "modules": [
+    {
+      "name": "DEBUG_UART",
+      "type": "uart",
+      "description": "Serial debug interface",
+      "parameters": {
+        "baudrate": 115200,
+        "data_bits": 8,
+        "parity": "none",
+        "stop_bits": 1,
+        "pins": {
+          "tx": "PA9",
+          "rx": "PA10"
+        }
+      }
+    }
+  ],
+  "requirements": [
+    "Serial communication at 115200 baud"
+  ],
+  "safety_critical": false,
+  "optimization_goal": "balanced"
+}

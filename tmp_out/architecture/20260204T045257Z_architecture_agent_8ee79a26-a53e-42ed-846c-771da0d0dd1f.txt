@@ -1,6 +1,0 @@
-GENERATED (mock): # Base prompt template (versioned)
-
-- **Role:** architecture_agent
-- **System Context:** CyberForge-26 project instructions (immutable during run)
-- **Constraints:** Follow MISRA-like rules.
-- **RAG D

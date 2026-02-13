@@ -1,0 +1,11 @@
+{
+  "project_name": "Test Project",
+  "target_platform": "STM32F103",
+  "modules": [
+    {
+      "name": "TEST_MODULE",
+      "type": "uart",
+      "parameters": {}
+    }
+  ]
+}

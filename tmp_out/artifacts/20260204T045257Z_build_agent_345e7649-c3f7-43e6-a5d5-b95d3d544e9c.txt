@@ -1,6 +1,0 @@
-GENERATED (mock): # Base prompt template (versioned)
-
-- **Role:** build_agent
-- **System Context:** CyberForge-26 project instructions (immutable during run)
-- **Constraints:** Include checksums and version metadata.
--
