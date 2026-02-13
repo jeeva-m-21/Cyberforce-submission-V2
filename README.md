@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚀 CyberForge-26
+# 🚀 ForgeMCU Studio
 
 ### AI-Assisted Governed Firmware Generation Platform
 
@@ -45,11 +45,11 @@
 
 ## 🎯 Overview
 
-**CyberForge-26** is an industry-aligned, multi-agent AI platform designed to automatically generate embedded C/C++ firmware, unit tests, quality reports, and OTA-ready deployment artifacts for any microcontroller class based on structured requirements.
+**ForgeMCU Studio** is an industry-aligned, multi-agent AI platform designed to automatically generate embedded C/C++ firmware, unit tests, quality reports, and OTA-ready deployment artifacts for any microcontroller class based on structured requirements.
 
-### What Makes CyberForge-26 Different?
+### What Makes ForgeMCU Studio Different?
 
-This is **not** a single firmware generator or a ChatGPT wrapper. CyberForge-26 is a **governed AI system** that:
+This is **not** a single firmware generator or a ChatGPT wrapper. ForgeMCU Studio is a **governed AI system** that:
 
 - 🎯 **Decomposes** firmware generation into specialized AI agents
 - 🛡️ **Enforces** strict governance using Model Control Protocol (MCP)
@@ -524,7 +524,7 @@ VITE_API_URL=http://localhost:8000
 LOG_LEVEL=INFO
 
 # Log file path (optional)
-LOG_FILE=cyberforge.log
+LOG_FILE=forgemcu.log
 
 # ============================================
 # Output Configuration
@@ -1049,7 +1049,7 @@ python cli.py --input examples/sample_input.json
 1. **Check Logs**
    ```powershell
    # Backend logs
-   tail cyberforge.log
+   tail forgemcu.log
    
    # Frontend browser console (F12)
    ```
@@ -1162,6 +1162,6 @@ This project was developed as part of academic coursework, leveraging cutting-ed
 
 **Built with ❤️ for the Embedded Systems Community**
 
-[⬆ Back to Top](#-cyberforge-26)
+[⬆ Back to Top](#-forgemcu-studio)
 
 </div>
