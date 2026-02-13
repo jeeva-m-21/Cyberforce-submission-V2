@@ -793,9 +793,6 @@ http://localhost:5173
 # Install all dev dependencies
 pip install -r requirements-dev.txt
 
-# Install pre-commit hooks (optional)
-pre-commit install
-
 # Frontend development
 cd frontend
 npm install

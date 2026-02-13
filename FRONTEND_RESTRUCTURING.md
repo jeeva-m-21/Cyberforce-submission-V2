@@ -101,7 +101,7 @@ After a project is successfully generated:
    - Metric breakdown with targets
    - Violations & issues summary
    - Recommendations
-   - Full JSON export for CI/CD integration
+   - Full JSON export
 
 ## API Integration
 
