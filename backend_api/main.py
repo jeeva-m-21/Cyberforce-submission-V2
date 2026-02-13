@@ -307,6 +307,36 @@ async def get_output_file(run_id: str, file_path: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/artifacts/runs/{run_id}/{file_path:path}", tags=["artifacts"])
+async def get_artifact_file(run_id: str, file_path: str):
+    """Get artifact file - alias for output endpoint"""
+    try:
+        # run_id may be either the real run uuid (key in `runs`) or the folder name (legacy)
+        folder = run_id
+        if run_id in runs and runs[run_id].output_dir:
+            folder = runs[run_id].output_dir
+
+        output_path = Path("output/runs") / folder / file_path
+        if not output_path.exists():
+            raise HTTPException(status_code=404, detail=f"File not found: {file_path}")
+
+        # For JSON files, parse and return the actual JSON
+        if output_path.suffix.lower() == '.json':
+            try:
+                content = output_path.read_text(encoding="utf-8", errors="ignore")
+                return json.loads(content)
+            except json.JSONDecodeError:
+                # If JSON parsing fails, return as text
+                return {"content": content}
+        
+        # For other files, return wrapped in content
+        return {"content": output_path.read_text(encoding="utf-8", errors="ignore")}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/api/templates", tags=["templates"])
 async def get_templates() -> Dict[str, Any]:
     """Get available templates and examples"""

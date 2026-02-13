@@ -65,7 +65,7 @@ const BuildDeploymentPage: React.FC<BuildDeploymentPageProps> = ({ runId, onBack
     try {
       setLoading(true)
       
-      const buildResponse = await axios.get(`${API_BASE}/artifacts/runs/${runId}/build_log.json`)
+      const buildResponse = await axios.get(`${API_BASE}/artifacts/runs/${runId}/build_log/build_log.json`)
       const buildData = buildResponse.data
       setBuildLog(buildData)
       

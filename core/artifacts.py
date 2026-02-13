@@ -72,7 +72,7 @@ def write_artifact(context: Any, agent_id: str, artifact_type: str, content: str
     meta_path = file_path.with_suffix(".meta.json")
     meta_path.write_text(json.dumps(asdict(meta), indent=2), encoding="utf-8")
 
-    # For quality reports, also create a standardized "latest" copy
+    # For quality reports and build logs, also create a standardized "latest" copy
     if agent_id == "quality_agent" and artifact_type == "reports":
         try:
             latest_path = out_dir / "quality_report_latest.json"
@@ -179,6 +179,15 @@ def write_json_artifact(context: Any, agent_id: str, artifact_type: str,
     )
     meta_path = file_path.with_suffix(".meta.json")
     meta_path.write_text(json.dumps(asdict(meta), indent=2), encoding="utf-8")
+
+    # For build logs, also create a standardized "build_log.json" copy
+    if agent_id == "build_agent" and artifact_type == "build_log":
+        try:
+            latest_path = out_dir / "build_log.json"
+            latest_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+            logging.info(f"Created standardized build log: {latest_path}")
+        except Exception as e:
+            logging.warning(f"Could not create build_log.json: {e}")
 
     return file_path
 
