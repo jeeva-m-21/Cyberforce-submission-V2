@@ -1129,7 +1129,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-This project was developed as part of academic coursework, leveraging cutting-edge AI and embedded systems technologies.
+This project was developed as part of a hackathon submission, leveraging cutting-edge AI and embedded systems technologies.
 
 ### Technologies & Frameworks
 - **Google Gemini AI** - Advanced language model for code generation
@@ -1138,6 +1138,7 @@ This project was developed as part of academic coursework, leveraging cutting-ed
 - **Tailwind CSS** - Utility-first CSS framework
 
 ### Special Thanks
+- **HCLTech** - For Sponsoring the hackathon and Guiding through the project with Industry Expertise
 - **Embedded Systems Community** - Domain knowledge and best practices
 - **Open Source Contributors** - For the amazing tools and libraries
 
