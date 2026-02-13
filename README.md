@@ -28,7 +28,6 @@
 - [Installation](#-installation)
   - [Windows Installation](#windows-installation)
   - [Linux/macOS Installation](#linuxmacos-installation)
-  - [Docker Installation](#docker-installation)
 - [Configuration](#-configuration)
 - [Usage](#-usage)
   - [CLI Usage](#cli-usage)
@@ -249,8 +248,7 @@ cyberforge-submission-v2/
 │   ├── setup_env.ps1               # Environment setup
 │   └── setup_ui.ps1                # UI setup script
 │
-├── 🐳 Dockerfile                   # Docker container definition
-├── 🔨 Makefile                     # Build automation
+├──  Makefile                     # Build automation
 ├── 📋 cli.py                       # CLI entry point
 ├── ⚙️ pyproject.toml               # Python project configuration
 ├── 📦 requirements.txt             # Python runtime dependencies
@@ -288,11 +286,7 @@ cyberforge-submission-v2/
 - **Node.js** - Version 18 or higher (for frontend)
 - **npm** or **pnpm** - Package manager for frontend dependencies
 - **Git** - Version control system
-
-### Optional Software
-
-- **Docker** - For containerized deployment (version 20.10+)
-- **Make** - For using Makefile commands (usually pre-installed on Linux/macOS)
+- **Make** - For using Makefile commands (optional, usually pre-installed on Linux/macOS)
 
 ### API Keys (Optional)
 
@@ -466,45 +460,6 @@ flake8 .
 
 # Verify frontend
 cd frontend && npm run build && cd ..
-```
-
----
-
-### Docker Installation
-
-#### Option 1: Using Docker Compose (Recommended)
-
-```bash
-# Build and start all services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-```
-
-#### Option 2: Manual Docker Build
-
-```bash
-# Build the backend image
-docker build -t cyberforge-backend:latest .
-
-# Run the backend container
-docker run -d \
-  --name cyberforge-backend \
-  -p 8000:8000 \
-  -e USE_REAL_GEMINI=0 \
-  -v $(pwd)/output:/app/output \
-  cyberforge-backend:latest
-
-# Build frontend (requires Node.js on host)
-cd frontend
-npm run build
-
-# Serve frontend with any static server
-npx serve -s dist -p 3000
 ```
 
 ---
