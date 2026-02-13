@@ -310,7 +310,7 @@ cyberforge-submission-v2/
 
 ```powershell
 # Clone the repository
-git clone https://github.com/yourusername/cyberforge-submission-v2.git
+git clone https://github.com/jeeva-m-21/Cyberforce-submission-V2
 cd cyberforge-submission-v2
 
 # Or if already cloned, navigate to the directory
