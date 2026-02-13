@@ -234,21 +234,40 @@ cyberforge-submission-v2/
 │   ├── test_agents_gemini.py       # Agent integration tests
 │   ├── test_artifacts.py           # Artifact management tests
 │   ├── test_build_agent.py         # Build agent tests
+│   ├── test1.py                    # Additional tests
 │   └── ...                         # Additional test files
 │
 ├── 📖 docs/                        # Additional documentation
+│   ├── quality/                    # Quality and naming documentation
+│   │   ├── QUALITY_NAMING_*.md     # Quality naming standards
+│   │   └── QUALITY_REPORT_NAMING.md # Quality report specs
+│   ├── ui/                         # UI/Frontend documentation
+│   │   ├── FRONTEND_RESTRUCTURING.md # Frontend architecture
+│   │   ├── UI_VISUAL_GUIDE.md      # UI design guide
+│   │   └── ARTIFACT_VIEWER_IMPROVEMENTS.md
 │   ├── ARCHITECTURE.md             # Detailed architecture guide
-│   └── ARTIFACT_SYSTEM.md          # Artifact management guide
+│   ├── ARTIFACT_SYSTEM.md          # Artifact management guide
+│   ├── BUILD_SUMMARY.md            # Build system overview
+│   ├── MCP_FIX_SUMMARY.md          # MCP implementation notes
+│   ├── VERIFICATION_CHECKLIST.md   # Verification procedures
+│   └── QUICK_REFERENCE.md          # Quick reference guide
 │
 ├── 📝 examples/                    # Example input files
 │   ├── sample_input.json           # Basic example
 │   ├── usecase_motor_controller.json # Motor controller example
-│   └── input_real_world.json       # Real-world scenario
+│   ├── input_real_world.json       # Real-world scenario
+│   └── arduino_simple_test.json    # Arduino test case
 │
 ├── 🔧 scripts/                     # Utility scripts
 │   ├── init_repo.ps1               # Git initialization
 │   ├── setup_env.ps1               # Environment setup
-│   └── setup_ui.ps1                # UI setup script
+│   ├── setup_ui.ps1                # UI setup script
+│   ├── run_ui_dev.py               # Development UI runner
+│   ├── verify_ui_build.py          # UI build verification
+│   ├── start_backend_debug.ps1     # Backend debug starter
+│   ├── start_dev.bat               # Development starter
+│   ├── test_api.ps1                # API testing script
+│   └── test_quality_reports.ps1    # Quality report tests
 │
 ├──  Makefile                     # Build automation
 ├── 📋 cli.py                       # CLI entry point
