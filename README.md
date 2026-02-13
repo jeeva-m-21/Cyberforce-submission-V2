@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚀 CyberForge-26
+# 🚀 ForgeMCU Studio
 
 ### AI-Assisted Governed Firmware Generation Platform
 
