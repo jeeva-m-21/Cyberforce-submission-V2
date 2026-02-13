@@ -8,11 +8,14 @@ from agents.architecture_agent import ArchitectureAgent
 from agents.code_agent import CodeAgent
 from agents.test_agent import TestAgent
 
+# Get project root (one level up from tests directory)
+PROJECT_ROOT = Path(__file__).parent.parent
+
 
 def make_context(tmp_path: Path):
     mcp = MCP(audit_log=tmp_path / "audit.log")
     llm = MockGemini()
-    prompt_loader = PromptLoader(Path("prompts"))
+    prompt_loader = PromptLoader(PROJECT_ROOT / "prompts")
     rag = SimpleNamespace(query=lambda q, top_k=3: ["doc1 snippet", "doc2 snippet"])  # lightweight stub
     return SimpleNamespace(mcp=mcp, rag=rag, llm=llm, prompt_loader=prompt_loader, output_dir=str(tmp_path))
 

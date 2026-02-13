@@ -87,13 +87,16 @@ class Orchestrator:
             os.environ["USE_REAL_GEMINI"] = "0"
             logger.info("Orchestrator.run(): SET USE_REAL_GEMINI=0 (Mock requested)")
 
+        # Get project root directory (2 levels up from this file)
+        project_root = Path(__file__).parent.parent.parent
+        
         mcp = MCP(audit_log=Path(self.output_dir) / "mcp_audit.log", role_permissions=self._mcp_role_permissions)
-        rag = RAG(Path("rag_docs"))
+        rag = RAG(project_root / "rag_docs")
         
         logger.info(f"About to create LLM client - USE_REAL_GEMINI={os.environ.get('USE_REAL_GEMINI')}, GEMINI_API_KEY_present={bool(os.environ.get('GEMINI_API_KEY'))}")
         llm = create_llm_client()
         logger.info(f"LLM client created: {type(llm).__name__}")
-        prompt_loader = PromptLoader(Path("prompts"))
+        prompt_loader = PromptLoader(project_root / "prompts")
         run_id = self.run_id or datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
         project_name = self.payload.get("project_name")
         ctx = ExecutionContext(mcp=mcp, rag=rag, llm=llm, prompt_loader=prompt_loader, output_dir=self.output_dir, run_id=run_id, project_name=project_name, payload=self.payload)

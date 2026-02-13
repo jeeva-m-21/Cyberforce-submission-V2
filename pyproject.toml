@@ -2,7 +2,7 @@
 name = "cyberforge-26"
 version = "0.1.0"
 description = "Governed AI platform for embedded firmware generation"
-authors = ["CyberForge Team <dev@example.com>"]
+authors = ["Jeeva M <jeeva4772@gmail.com>", "Sanjith Badri", "Krithik Vishal"]
 
 [tool.poetry.dependencies]
 python = "^3.10"

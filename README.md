@@ -12,7 +12,7 @@
 
 **Deterministic, Auditable, Industrial-Grade Embedded Firmware Generation**
 
-[Features](#-key-features) • [Architecture](#-architecture-overview) • [Installation](#-installation) • [Usage](#-usage) • [Documentation](#-documentation)
+[Features](#-key-features) • [Architecture](#-architecture-overview) • [Installation](#-installation) • [Usage](#-usage) • [Development](#-development)
 
 </div>
 
@@ -38,6 +38,8 @@
 - [Troubleshooting](#-troubleshooting)
 - [Contributing](#-contributing)
 - [License](#-license)
+- [Acknowledgments](#-acknowledgments)
+- [Contact & Support](#-contact--support)
 
 ---
 
@@ -402,8 +404,8 @@ cd ..
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/cyberforge-submission-v2.git
-cd cyberforge-submission-v2
+git clone https://github.com/jeeva-m-21/Cyberforce-submission-V2.git
+cd Cyberforce-submission-V2
 ```
 
 #### Step 2: Set Up Python Environment
@@ -1111,18 +1113,32 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- **Google Gemini** - AI generation capabilities
-- **FastAPI** - High-performance backend framework
-- **React & Vite** - Modern frontend development
+This project was developed as part of academic coursework, leveraging cutting-edge AI and embedded systems technologies.
+
+### Technologies & Frameworks
+- **Google Gemini AI** - Advanced language model for code generation
+- **FastAPI** - High-performance Python web framework
+- **React + Vite** - Modern frontend development stack
+- **Tailwind CSS** - Utility-first CSS framework
+
+### Special Thanks
 - **Embedded Systems Community** - Domain knowledge and best practices
+- **Open Source Contributors** - For the amazing tools and libraries
 
 ---
 
 ## 📞 Contact & Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/cyberforge-submission-v2/issues)
-- **Documentation**: [docs/](docs/)
-- **Email**: dev@example.com
+- **GitHub Repository**: [Cyberforce-submission-V2](https://github.com/jeeva-m-21/Cyberforce-submission-V2)
+- **Issues & Bug Reports**: [GitHub Issues](https://github.com/jeeva-m-21/Cyberforce-submission-V2/issues)
+- **Documentation**: [Project Docs](docs/)
+- **Email**: jeeva4772@gmail.com
+
+### Authors
+
+- **Jeeva M** - Lead Developer - [GitHub](https://github.com/jeeva-m-21)
+- **Sanjith Badri** - Core Developer
+- **Krithik Vishal** - Core Developer
 
 ---
 
