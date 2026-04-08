@@ -248,8 +248,7 @@ MIT — see [LICENSE](LICENSE).
 ## Authors
 
 - **Jeeva M** — [GitHub](https://github.com/jeeva-m-21)
-- **Sanjith Badri**
-- **Krithik Vishal**
+
 
 ### Acknowledgments
 
